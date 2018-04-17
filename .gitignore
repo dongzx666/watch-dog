@@ -1,0 +1,6 @@
+.idea
+/apidoc
+/node_modules
+/logs
+/config
+/public/images/*
