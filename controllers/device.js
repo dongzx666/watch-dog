@@ -156,20 +156,26 @@ exports.getDeviceLog = async ctx => {
  *   "device_id": "1"
  * }
  *
- * @apiSuccess  {number} err_code 0
- * @apiSuccess  {string} msg success
- * @apiSuccess  {object} res
+ * @apiSuccess  {Number} err_code 0
+ * @apiSuccess  {String} msg success
+ * @apiSuccess  {Array} res
  * @apiSuccessExample {application/json} 响应案例：
  *   {
  *     "err_code": 0,
  *     "msg": "success",
- *     "res": {
+ *     "res": [{
  *       "electricity": 100,
  *       "lock_state": 1,
  *       "knock_state": 1,
  *       "poke_state": 1,
  *       "create_time": "2017-10-21T06:26:16.000Z"
- *     }
+ *     }, {
+ *       "electricity": 100,
+ *       "lock_state": 1,
+ *       "knock_state": 1,
+ *       "poke_state": 1,
+ *       "create_time": "2017-10-21T06:26:16.000Z"
+ *     }]
  *   }
  *
  */
@@ -251,9 +257,9 @@ exports.insertDeviceInfo = async ctx => {
  *   "image_url": "http://120.25.199.214:3001/images/1515917257562.jpg"
  * }
  *
- * @apiSuccess  {number} err_code 0
- * @apiSuccess  {string} msg success
- * @apiSuccess  {object} res
+ * @apiSuccess  {Number} err_code 0
+ * @apiSuccess  {String} msg success
+ * @apiSuccess  {Object} res
  * @apiSuccessExample {application/json} 响应案例：
  *   {
  *     "err_code": 0,
@@ -290,12 +296,12 @@ exports.insertDeviceImage = async ctx => {
  *
  * @apiParamExample {application/json} 请求案例:
  * {
- *   "device_id": 1
+ *   "device_id": "1"
  * }
  *
- * @apiSuccess  {number} err_code 0
- * @apiSuccess  {string} msg success
- * @apiSuccess  {object} res
+ * @apiSuccess  {Number} err_code 0
+ * @apiSuccess  {String} msg success
+ * @apiSuccess  {Array} res
  * @apiSuccessExample {application/json} 响应案例：
  *   {
  *     "err_code": 0,
