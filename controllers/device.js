@@ -236,8 +236,8 @@ exports.getDeviceInfo = async ctx => {
 
 exports.insertDeviceInfo = async ctx => {
   const { device_id, device_info } = ctx.request.body
-  const result = await DeviceModel.insertDeviceInfo({device_id, device_info})
-  ctx.body = result
+  await DeviceModel.insertDeviceInfo({device_id, device_info})
+  // ctx.body = result
 }
 
 /**
@@ -280,8 +280,8 @@ exports.insertDeviceInfo = async ctx => {
 
 exports.insertDeviceImage = async ctx => {
   const { device_id, image_url } = ctx.request.body
-  const result = await DeviceModel.insertDeviceImage({ device_id, image_url })
-  ctx.body = result
+  await DeviceModel.insertDeviceImage({ device_id, image_url })
+  // ctx.body = result
 }
 
 /**
