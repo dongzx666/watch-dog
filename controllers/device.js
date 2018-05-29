@@ -1,5 +1,6 @@
 const {query, executeTrans} = require('../utils/db_util.js')
 const DeviceModel = require('../models/device')
+const DeviceService = require('../services/device.js')
 const LegalModel = require('../models/legal.js')
 const {ApiError, ApiErrorNames} = require('../utils/err_util.js');
 
@@ -142,52 +143,6 @@ exports.getDeviceLog = async ctx => {
 }
 
 /**
- * @api {POST} /device/getDeviceInfo 获取设备信息
- * @apiName getDeviceInfo
- * @apiVersion 1.0.0
- * @apiGroup Device
- * @apiDescription 获取设备信息
- *
- * @apiParam {Object} data
- * @apiParam {String} data.device_id 设备id
- *
- * @apiParamExample {application/json} 请求案例:
- * {
- *   "device_id": "1"
- * }
- *
- * @apiSuccess  {Number} err_code 0
- * @apiSuccess  {String} msg success
- * @apiSuccess  {Array} res
- * @apiSuccessExample {application/json} 响应案例：
- *   {
- *     "err_code": 0,
- *     "msg": "success",
- *     "res": [{
- *       "electricity": 100,
- *       "lock_state": 1,
- *       "knock_state": 1,
- *       "poke_state": 1,
- *       "create_time": "2017-10-21T06:26:16.000Z"
- *     }, {
- *       "electricity": 100,
- *       "lock_state": 1,
- *       "knock_state": 1,
- *       "poke_state": 1,
- *       "create_time": "2017-10-21T06:26:16.000Z"
- *     }]
- *   }
- *
- */
-
-exports.getDeviceInfo = async ctx => {
-  const { uid, token } = ctx.request.headers
-  const { device_id } = ctx.request.body
-  const result = await DeviceModel.getDeviceInfo({device_id})
-  ctx.body = result
-}
-
-/**
  * @api {POST} /device/insertDeviceInfo 插入设备信息
  * @apiName insertDeviceInfo
  * @apiVersion 1.0.0
@@ -215,27 +170,17 @@ exports.getDeviceInfo = async ctx => {
  *
  * @apiSuccess  {number} err_code 0
  * @apiSuccess  {string} msg success
- * @apiSuccess  {object} res
  * @apiSuccessExample {application/json} 响应案例：
  *   {
  *     "err_code": 0,
- *     "msg": "success",
- *     "res": {
- *          "fieldCount": 0,
- *          "affectedRows": 1,
- *          "insertId": 2,
- *          "serverStatus": 2,
- *          "warningCount": 0,
- *          "message": "",
- *          "protocol41": true,
- *          "changedRows": 0
-        }
+ *     "msg": "success"
  *   }
  *
  */
 
 exports.insertDeviceInfo = async ctx => {
   const { device_id, device_info } = ctx.request.body
+  DeviceService.validateInsertInfo(device_id, device_info)
   await DeviceModel.insertDeviceInfo({device_id, device_info})
   // ctx.body = result
 }
@@ -259,64 +204,16 @@ exports.insertDeviceInfo = async ctx => {
  *
  * @apiSuccess  {Number} err_code 0
  * @apiSuccess  {String} msg success
- * @apiSuccess  {Object} res
  * @apiSuccessExample {application/json} 响应案例：
  *   {
  *     "err_code": 0,
- *     "msg": "success",
- *     "res": {
- *          "fieldCount": 0,
- *          "affectedRows": 1,
- *          "insertId": 2,
- *          "serverStatus": 2,
- *          "warningCount": 0,
- *          "message": "",
- *          "protocol41": true,
- *          "changedRows": 0
-        }
+ *     "msg": "success"
  *   }
  *
  */
 
 exports.insertDeviceImage = async ctx => {
   const { device_id, image_url } = ctx.request.body
+  DeviceService.validateInsertImage(device_id, image_url)
   await DeviceModel.insertDeviceImage({ device_id, image_url })
-  // ctx.body = result
-}
-
-/**
- * @api {POST} /device/getDeviceImage 获取设备图像
- * @apiName getDeviceImage
- * @apiVersion 1.0.0
- * @apiGroup Device
- * @apiDescription 获取设备图像
- *
- * @apiParam {Object} data
- * @apiParam {String} data.device_id 设备id
- *
- * @apiParamExample {application/json} 请求案例:
- * {
- *   "device_id": "1"
- * }
- *
- * @apiSuccess  {Number} err_code 0
- * @apiSuccess  {String} msg success
- * @apiSuccess  {Array} res
- * @apiSuccessExample {application/json} 响应案例：
- *   {
- *     "err_code": 0,
- *     "msg": "success",
- *     "res": [{
- *       "image_url": "http://120.25.199.214:3001/images/1515917257562.jpg"
- *     }, {
- *       "image_url": "http://120.25.199.214:3001/images/1523895285649.jpg"
- *     }]
- *   }
- *
- */
-
-exports.getDeviceImage = async ctx => {
-  const { device_id } = ctx.request.body
-  const result = await DeviceModel.getDeviceImage({ device_id })
-  ctx.body = result
 }

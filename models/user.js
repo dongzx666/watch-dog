@@ -59,3 +59,29 @@ exports.isCurrentUser = async function (uid, token) {
     return false
   }
 }
+
+exports.getDeviceImage = async ({ device_id, page_size, page_num }) => {
+  const start = (page_num - 1) * page_size
+  const sql = 'SELECT image_url, create_time FROM image_info WHERE device_id = ? ORDER BY modified_time DESC LIMIT ?,?'
+  const rows = await query(sql, [device_id, start, page_size])
+  return rows
+}
+
+exports.getDeviceInfo = async ({device_id}) => {
+  const sql = 'SELECT electricity, lock_state, knock_state, poke_state, create_time FROM device_log WHERE device_id = ? ORDER BY modified_time DESC LIMIT 1'
+  const rows = await query(sql, [device_id])
+  return rows
+}
+
+exports.postCommand = async ({device_id, type, content}) => {
+  const insert_part = { device_id, type, content }
+  const sql = 'INSERT INTO command_log SET ?'
+  const rows = await query(sql, insert_part)
+  return rows
+}
+
+exports.receiveCommand = async ({insert_id, result}) => {
+  const sql = 'UPDATE command_log SET result = ? WHERE id = ?'
+  const rows = await query(sql, [result, insert_id])
+  return rows
+}

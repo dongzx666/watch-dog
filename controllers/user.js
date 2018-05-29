@@ -1,7 +1,9 @@
 const {ApiError, ApiErrorNames} = require('../utils/err_util.js');
 const {query, executeTrans} = require('../utils/db_util.js')
 const UserModel = require('../models/user')
+const UserService = require('../services/user.js')
 const {testPhone} = require('../utils/format_util.js')
+const rp = require('request-promise-native')
 
 /**
  * @apiDefine CODE_0
@@ -218,4 +220,142 @@ exports.updateUserInfo = async ctx => {
     throw new ApiError(ApiErrorNames.ILLEGAL_OPERATION)
   }
   await UserModel.updateInfo(updateData, uid)
+}
+
+/**
+ * @api {POST} /device/getDeviceInfo 获取设备信息
+ * @apiName getDeviceInfo
+ * @apiVersion 1.0.0
+ * @apiGroup User
+ * @apiDescription 获取设备信息
+ *
+ * @apiParam {Object} data
+ * @apiParam {String} data.device_id 设备id
+ *
+ * @apiParamExample {application/json} 请求案例:
+ * {
+ *   "device_id": "1"
+ * }
+ *
+ * @apiSuccess  {Number} err_code 0
+ * @apiSuccess  {String} msg success
+ * @apiSuccess  {Object} res
+ * @apiSuccessExample {application/json} 响应案例：
+ *   {
+ *     "err_code": 0,
+ *     "msg": "success",
+ *     "res": {
+ *       "electricity": 100,
+ *       "lock_state": 1,
+ *       "knock_state": 1,
+ *       "poke_state": 1,
+ *       "create_time": "2017-10-21T06:26:16.000Z"
+ *     }
+ *   }
+ *
+ */
+
+exports.getDeviceInfo = async ctx => {
+  const { uid, token } = ctx.request.headers
+  const { device_id } = ctx.request.body
+  const result = await UserModel.getDeviceInfo({device_id})
+  ctx.body = result[0]
+}
+
+/**
+ * @api {POST} /user/getDeviceImage 获取设备图像
+ * @apiName getDeviceImage
+ * @apiVersion 1.0.0
+ * @apiGroup User
+ * @apiDescription 获取设备图像
+ *
+ * @apiParam {Object} data
+ * @apiParam {String} data.device_id 设备id
+ * @apiParam {Number} data.page_size 每页个数
+ * @apiParam {Number} data.page_num 页数
+ *
+ * @apiParamExample {application/json} 请求案例:
+ * {
+ *   "device_id": "1",
+ *   "page_size": 5,
+ *   "page_num": 1
+ * }
+ *
+ * @apiSuccess  {Number} err_code 0
+ * @apiSuccess  {String} msg success
+ * @apiSuccess  {Array} res
+ * @apiSuccessExample {application/json} 响应案例：
+ *   {
+ *     "err_code": 0,
+ *     "msg": "success",
+ *     "res": [{
+ *       "image_url": "http://120.25.199.214:3001/images/1515917257562.jpg"
+ *     }, {
+ *       "image_url": "http://120.25.199.214:3001/images/1523895285649.jpg"
+ *     }]
+ *   }
+ *
+ */
+
+exports.getDeviceImage = async ctx => {
+  const { device_id, page_size, page_num } = ctx.request.body
+  UserService.validateGetImage(device_id)
+  const result = await UserModel.getDeviceImage({ device_id, page_size, page_num })
+  ctx.body = result
+}
+
+/**
+ * @api {POST} /user/postCommand 发送指令
+ * @apiName postCommand
+ * @apiVersion 1.0.0
+ * @apiGroup User
+ * @apiDescription 发送指令
+ *
+ * @apiParam {Object} data
+ * @apiParam {Number} data.device_id 设备id
+ * @apiParam {String} data.type 类型，1为开关，2为拍照，3为电机
+ * @apiParam {String} data.content 内容，若type=1，则content为0（关）或1（开），若type=2, 则content为空即可，若type=3，则content为0-100
+ *
+ * @apiParamExample {application/json} 请求案例:
+ * {
+ *   "device_id": 1,
+ *   "type": 1,
+ *   "content": 0
+ * }
+ *
+ * @apiSuccess  {Number} err_code 0
+ * @apiSuccess  {String} msg success
+ * @apiSuccess  {Object} res
+ * @apiSuccess  {String} res.result 若type=1或3,则result为空，若type=2,则result为图片地址
+ * @apiSuccessExample {application/json} 响应案例：
+ *   {
+ *     "err_code": 0,
+ *     "msg": "success",
+ *     "result": ""
+ *   }
+ *
+ */
+
+exports.postCommand = async ctx => {
+  const { device_id, type, content } = ctx.request.body
+  const post_result = await UserModel.postCommand({ device_id, type, content })
+  const insert_id = post_result.insertId
+  const options = {
+    method: 'POST',
+    uri: 'http://api.posttestserver.com/post',
+    body: {
+        device_id,
+        type,
+        content
+    },
+    json: true
+  }
+  rp(options).then(res => {
+    ctx.body = {
+      result: res.result
+    }
+    if (res.result != null) {
+      // const receive_result = await UserModel.receiveCommand({insert_id, result})
+    }
+  })
 }
