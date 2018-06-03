@@ -1,9 +1,9 @@
-const {query, executeTrans} = require('../utils/db_util.js')
+// const {query, executeTrans} = require('../utils/db_util.js')
 const DeviceModel = require('../models/device')
 const DeviceService = require('../services/device.js')
 const LegalModel = require('../models/legal.js')
 const {ApiError, ApiErrorNames} = require('../utils/err_util.js');
-
+const JPush = require('jpush-async')
 
 /**
  * @apiDefine CODE_0
@@ -86,7 +86,7 @@ exports.register = async ctx => {
     throw new ApiError(ApiErrorNames.REPEATED_BIND)
   }
   await DeviceModel.register(uid, device_id)
-  ctx.body = {}
+  ctx.body = ""
 }
 
 /**
@@ -182,7 +182,7 @@ exports.insertDeviceInfo = async ctx => {
   const { device_id, device_info } = ctx.request.body
   DeviceService.validateInsertInfo(device_id, device_info)
   await DeviceModel.insertDeviceInfo({device_id, device_info})
-  // ctx.body = result
+  ctx.body = ""
 }
 
 /**
@@ -216,4 +216,60 @@ exports.insertDeviceImage = async ctx => {
   const { device_id, image_url } = ctx.request.body
   DeviceService.validateInsertImage(device_id, image_url)
   await DeviceModel.insertDeviceImage({ device_id, image_url })
+  ctx.body = ""
+}
+
+/**
+ * @api {POST} /device/postUserMsg 消息推送
+ * @apiName postUserMsg
+ * @apiVersion 1.0.0
+ * @apiGroup Device
+ * @apiDescription 消息推送
+ *
+ * @apiParam {Object} data
+ * @apiParam {String} data.device_id 设备id
+ * @apiParam {String} data.content 消息内容
+ *
+ * @apiParamExample {application/json} 请求案例:
+ * {
+ *   "device_id": "1",
+ *   "content": "此为报警推送信息"
+ * }
+ *
+ * @apiSuccess  {Number} err_code 0
+ * @apiSuccess  {String} msg success
+ * @apiSuccessExample {application/json} 响应案例：
+ *   {
+ *     "err_code": 0,
+ *     "msg": "success"
+ *   }
+ *
+ */
+exports.postUserMsg = async ctx => {
+  const { device_id, content } = ctx.request.body
+  // 校验
+  DeviceService.validateHaveDevice(device_id)
+  // 插入数据库
+  const device_info = {content}
+  await DeviceModel.insertDeviceInfo(device_id, device_info)
+  // 提取用户信息
+  const user_id = await DeviceModel.getUserByDevice(device_id)
+  const jg_id = await DeviceModel.getJGId(user_id)
+  // 极光推送
+  const  client = JPush.buildClient('66a4520d0dcb177579ae902a', 'c719e907754767591a995050')
+  // var client = JPush.buildClient({
+  //   appKey:'47a3ddda34b2602fa9e17c01',
+  //   masterSecret:'d94f733358cca97b18b2cb98',
+  //   isDebug:false
+  // });
+  client.push().setPlatform('android')
+    .setAudience(JPush.registration_id(jg_id))
+    .setNotification('Hi, JPush', JPush.android(content, null, 1))
+    .send()
+    .then(function(result) {
+        console.log(result)
+    }).catch(function(err) {
+        console.log(err)
+    })
+  ctx.body = ''
 }

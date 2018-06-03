@@ -57,3 +57,15 @@ exports.insertDeviceImage = async ({ device_id, image_url }) => {
   const rows = await query(sql, insert_part)
   return rows
 }
+
+exports.getUserByDevice = async (device_id) => {
+  const sql = 'SELECT user_id FROM user_device WHERE device_id = ?'
+  const rows = await query(sql, device_id)
+  return rows[0].user_id
+}
+
+exports.getJGId = async (user_id) => {
+  const sql = 'SELECT js_id FROM user_info WHERE id = ?'
+  const rows = await query(sql, device_id)
+  return rows[0].jg_id
+}

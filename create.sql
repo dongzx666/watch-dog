@@ -8,6 +8,7 @@ CREATE TABLE   IF NOT EXISTS  `user_info` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
   `modified_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `level` int(11) DEFAULT NULL,
+  `jg_id` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -92,6 +92,7 @@ exports.register = async ctx => {
     throw new ApiError(ApiErrorNames.USER_EXIST)
   }
   await UserModel.register({phone, password})
+  ctx.body = ""
 }
 
 /**
@@ -220,6 +221,7 @@ exports.updateUserInfo = async ctx => {
     throw new ApiError(ApiErrorNames.ILLEGAL_OPERATION)
   }
   await UserModel.updateInfo(updateData, uid)
+  ctx.body = ""
 }
 
 /**

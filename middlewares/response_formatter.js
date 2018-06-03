@@ -15,7 +15,7 @@ var response_formatter = function(pattern){
             // console.log(Object.keys(error))
             //如果异常类型是API异常并且通过正则验证的url，将错误信息添加到响应体中返回。
             if(error instanceof ApiError){
-                ctx.status = 200;
+                // ctx.status = 200;
                 ctx.body = {
                     err_code: error.err_code,
                     msg: error.msg
@@ -47,17 +47,24 @@ var response_formatter = function(pattern){
             //     }
             // }
         // }
-        // console.log(ctx.body)
-        if (ctx.body) {
+        console.log(ctx)
+        if (ctx.response.status != 200) {
             ctx.body = {
-                err_code: 0,
-                msg: 'success',
-                res: ctx.body
+                err_code: ctx.response.status,
+                msg: ctx.response.message
             }
         } else {
-            ctx.body = {
-                err_code: 0,
-                msg: 'success'
+            if (ctx.body) {
+                ctx.body = {
+                    err_code: 0,
+                    msg: 'success',
+                    res: ctx.body
+                }
+            } else {
+                ctx.body = {
+                    err_code: 0,
+                    msg: 'success'
+                }
             }
         }
     }
