@@ -305,9 +305,9 @@ exports.getDeviceInfo = async ctx => {
  */
 
 exports.getDeviceImage = async ctx => {
-  const { device_id, page_size, page_num } = ctx.request.body
-  page_size = Number.parseInt(page_size)
-  page_num = Number.parseInt(page_num)
+  let { device_id, page_size, page_num } = ctx.request.body
+  page_size = ~~page_size
+  page_num = ~~page_num
   UserService.validateGetImage(device_id)
   const result = await UserModel.getDeviceImage({ device_id, page_size, page_num })
   ctx.body = result
