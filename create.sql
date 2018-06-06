@@ -8,7 +8,7 @@ CREATE TABLE   IF NOT EXISTS  `user_info` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
   `modified_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `level` int(11) DEFAULT NULL,
-  `jg_id` varchar(100) DEFAULT NULL,
+  `alias` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -31,11 +31,6 @@ CREATE TABLE   IF NOT EXISTS  `device_info` (
   `ip` varchar(100) DEFAULT NULL,
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
   `modified_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `31` varchar(100) DEFAULT NULL,
-  `32` varchar(100) DEFAULT NULL,
-  `33` varchar(100) DEFAULT NULL,
-  `34` varchar(100) DEFAULT NULL,
-  `35` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -60,6 +55,11 @@ CREATE TABLE   IF NOT EXISTS  `device_log` (
   `knock_state` tinyint(1) DEFAULT 0,
   `poke_state` tinyint(1) DEFAULT 0,
   `lock_state` tinyint(1) DEFAULT 0,
+  `31` varchar(100) DEFAULT NULL,
+  `32` varchar(100) DEFAULT NULL,
+  `33` varchar(100) DEFAULT NULL,
+  `34` varchar(100) DEFAULT NULL,
+  `35` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

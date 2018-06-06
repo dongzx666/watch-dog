@@ -251,7 +251,12 @@ exports.updateUserInfo = async ctx => {
  *       "lock_state": 1,
  *       "knock_state": 1,
  *       "poke_state": 1,
- *       "create_time": "2017-10-21T06:26:16.000Z"
+ *       "create_time": "2017-10-21T06:26:16.000Z",
+ *       "31": "",
+ *       "32": "",
+ *       "33": "",
+ *       "34": "",
+ *       "35": ""
  *     }
  *   }
  *
@@ -272,13 +277,13 @@ exports.getDeviceInfo = async ctx => {
  * @apiDescription 获取设备图像
  *
  * @apiParam {Object} data
- * @apiParam {String} data.device_id 设备id
- * @apiParam {Number} data.page_size 每页个数
- * @apiParam {Number} data.page_num 页数
+ * @apiParam {Number/String} data.device_id 设备id
+ * @apiParam {Number/String} data.page_size 每页个数
+ * @apiParam {Number/String} data.page_num 页数
  *
  * @apiParamExample {application/json} 请求案例:
  * {
- *   "device_id": "1",
+ *   "device_id": 1,
  *   "page_size": 5,
  *   "page_num": 1
  * }
@@ -301,6 +306,8 @@ exports.getDeviceInfo = async ctx => {
 
 exports.getDeviceImage = async ctx => {
   const { device_id, page_size, page_num } = ctx.request.body
+  page_size = Number.parseInt(page_size)
+  page_num = Number.parseInt(page_num)
   UserService.validateGetImage(device_id)
   const result = await UserModel.getDeviceImage({ device_id, page_size, page_num })
   ctx.body = result

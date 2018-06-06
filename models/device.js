@@ -64,8 +64,8 @@ exports.getUserByDevice = async (device_id) => {
   return rows[0].user_id
 }
 
-exports.getJGId = async (user_id) => {
-  const sql = 'SELECT js_id FROM user_info WHERE id = ?'
-  const rows = await query(sql, device_id)
-  return rows[0].jg_id
+exports.getAlias = async (user_id) => {
+  const sql = 'SELECT alias FROM user_info WHERE id = ?'
+  const rows = await query(sql, user_id)
+  return rows[0].alias
 }

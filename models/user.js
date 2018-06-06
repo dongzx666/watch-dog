@@ -15,8 +15,8 @@ exports.updateInfo = async function (data, uid) {
 }
 
 exports.register = async function ({phone, password}) {
-  const sql = "INSERT INTO user_info SET phone = ?, password = ?"
-  await query(sql, [phone, password])
+  const sql = "INSERT INTO user_info SET phone = ?, password = ?, alias = ?"
+  await query(sql, [phone, password, phone])
 }
 
 exports.getUserUserByPhone = async function (phone) {
@@ -68,7 +68,7 @@ exports.getDeviceImage = async ({ device_id, page_size, page_num }) => {
 }
 
 exports.getDeviceInfo = async ({device_id}) => {
-  const sql = 'SELECT electricity, lock_state, knock_state, poke_state, create_time FROM device_log WHERE device_id = ? ORDER BY modified_time DESC LIMIT 1'
+  const sql = 'SELECT electricity, lock_state, knock_state, poke_state, create_time, 31, 32, 33, 34, 35 FROM device_log WHERE device_id = ? ORDER BY modified_time DESC LIMIT 1'
   const rows = await query(sql, [device_id])
   return rows
 }

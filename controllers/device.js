@@ -3,7 +3,7 @@ const DeviceModel = require('../models/device')
 const DeviceService = require('../services/device.js')
 const LegalModel = require('../models/legal.js')
 const {ApiError, ApiErrorNames} = require('../utils/err_util.js');
-const JPush = require('jpush-async')
+var JPush = require('../node_modules/jpush-async/lib/JPush/JPushAsync.js')
 
 /**
  * @apiDefine CODE_0
@@ -156,6 +156,7 @@ exports.getDeviceLog = async ctx => {
  * @apiParam {String} data.device_info.lock_state 开锁标志
  * @apiParam {String} data.device_info.poke_state 锁体检测
  * @apiParam {String} data.device_info.knock_state 震动采样
+ * @apiParam {String} data.31 - data.35 自定义功能
  *
  * @apiParamExample {application/json} 请求案例:
  * {
@@ -164,8 +165,13 @@ exports.getDeviceLog = async ctx => {
  *     "electricity": 100,
  *     "lock_state": 1,
  *     "knock_state": 1,
- *     "poke_state": 1
-    }
+ *     "poke_state": 1,
+ *     "31": "",
+ *     "32": "",
+ *     "33": "",
+ *     "34": "",
+ *     "35": ""
+ *   }
  * }
  *
  * @apiSuccess  {number} err_code 0
@@ -254,16 +260,16 @@ exports.postUserMsg = async ctx => {
   await DeviceModel.insertDeviceInfo(device_id, device_info)
   // 提取用户信息
   const user_id = await DeviceModel.getUserByDevice(device_id)
-  const jg_id = await DeviceModel.getJGId(user_id)
+  const alias = await DeviceModel.getAlias(user_id)
   // 极光推送
-  const  client = JPush.buildClient('66a4520d0dcb177579ae902a', 'c719e907754767591a995050')
+  var client = JPush.buildClient('51f6331cb0e5342a8768fe92', 'a04c9970d14f2c119fe3bce1')
   // var client = JPush.buildClient({
-  //   appKey:'47a3ddda34b2602fa9e17c01',
-  //   masterSecret:'d94f733358cca97b18b2cb98',
+  //   appKey:'51f6331cb0e5342a8768fe92',
+  //   masterSecret:'a04c9970d14f2c119fe3bce1',
   //   isDebug:false
   // });
   client.push().setPlatform('android')
-    .setAudience(JPush.registration_id(jg_id))
+    .setAudience(JPush.alias(alias))
     .setNotification('Hi, JPush', JPush.android(content, null, 1))
     .send()
     .then(function(result) {
