@@ -12,7 +12,6 @@ var response_formatter = function(pattern){
             await next();
         } catch (error) {
             console.log(error)
-            // console.log(Object.keys(error))
             //如果异常类型是API异常并且通过正则验证的url，将错误信息添加到响应体中返回。
             if(error instanceof ApiError){
                 // ctx.status = 200;
@@ -23,7 +22,7 @@ var response_formatter = function(pattern){
             } else {
                 ctx.body = {
                     err_code: 500,
-                    msg: error.code
+                    msg: error.originalError ? error.originalError.message : error.message
                 }
             }
             //继续抛，让外层中间件处理日志

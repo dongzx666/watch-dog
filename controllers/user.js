@@ -4,6 +4,8 @@ const UserModel = require('../models/user')
 const UserService = require('../services/user.js')
 const {testPhone} = require('../utils/format_util.js')
 const rp = require('request-promise-native')
+const bcrypt = require('bcrypt')
+const jsonwebtoken = require('jsonwebtoken');
 
 /**
  * @apiDefine CODE_0
@@ -62,11 +64,11 @@ const rp = require('request-promise-native')
 
 
 /**
- * @api {POST} /user/register 用户注册（*）
+ * @api {POST} /user/register 用户注册
  * @apiName register
  * @apiVersion 1.0.0
  * @apiGroup User
- * @apiDescription 进行用户注册，POST方法，body传JSON格式手机号和密码，成功返回状态码0
+ * @apiDescription 进行用户注册，POST方法
  *
  * @apiParam {Object} data
  * @apiParam {String} data.phone 手机号
@@ -83,7 +85,7 @@ const rp = require('request-promise-native')
  * @apiUse USER_EXIST
  */
 exports.register = async ctx => {
-  const {phone, password} = ctx.request.body
+  let {phone, password} = ctx.request.body
   if (!Boolean(phone) ||  !Boolean(password) || !testPhone(phone)) {
     throw new ApiError(ApiErrorNames.PARAMS_ERROR)
   }
@@ -91,15 +93,16 @@ exports.register = async ctx => {
   if (userList.length) {
     throw new ApiError(ApiErrorNames.USER_EXIST)
   }
+  password = await bcrypt.hash(password, 5)
   await UserModel.register({phone, password})
   ctx.body = ""
 }
 
 /**
- * @api {POST} /user/login 用户登录（*）
+ * @api {POST} /user/login 用户登录
  * @apiName login
  * @apiGroup User
- * @apiDescription 进行用户登录，POST方法，body传JSON格式手机号和密码，成功返回状态码0和res对象（包括uid和token
+ * @apiDescription 进行用户登录，POST方法
  * ）
  *
  *
@@ -116,7 +119,6 @@ exports.register = async ctx => {
  * @apiSuccess {Number} err_code 0
  * @apiSuccess {String} msg  'success'
  * @apiSuccess {Object} res
- * @apiSuccess {String} res.uid 用户ID
  * @apiSuccess {String} res.token 用户token
  *
  * @apiSuccessExample {application/json} 响应案例:
@@ -124,8 +126,7 @@ exports.register = async ctx => {
  *   "err_code": 0,
  *   "msg": "success",
  *   "res": {
- *     "uid": 1,
- *     "token": "ccf930e0-b1a6-11e7-99c9-912787fed0d4"
+ *     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InBob25lIjoiMTUwMzM1MDgyMjkiLCJwYXNzd29yZCI6IjEyMzQ1NiJ9LCJleHAiOjE1MzA4ODkzMzcsImlhdCI6MTUyODI5NzMzN30.BaigLKJXETQTi3JJ6s-dce65VWmefGXS2EjdvOQBxVw"
  *   }
  * }
  *
@@ -137,31 +138,34 @@ exports.login = async ctx => {
   if (!Boolean(phone) ||  !Boolean(password) || !testPhone(phone)) {
     throw new ApiError(ApiErrorNames.PARAMS_ERROR)
   }
-  const idList = await UserModel.isExitUser(phone, password)
-  if (!idList.length) {
+  const user = await UserModel.isExitUser(phone, password)
+  const pwdCompare = await bcrypt.compare(password, user[0].password)
+  if (!pwdCompare) {
     throw new ApiError(ApiErrorNames.PASSWORD_ERROR)
   }
-  const { id } = idList[0]
-  const { id:uid, token } = await UserModel.getTokenByUserId(id)
-  ctx.body = {uid, token}
+  const token = jsonwebtoken.sign({
+    data: { phone, password },
+    // 设置 token 过期时间
+    exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30), // 60 seconds * 60 minutes = 1 hour, 共一个月
+  }, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9')
+  await UserModel.updateInfoByPhone({token}, phone)
+  ctx.body = {token}
 }
 
 /**
- * @api {GET} /user/getUserInfo 获取用户信息（*）
+ * @api {GET} /user/getUserInfo 获取用户信息
  * @apiName getUserInfo
  * @apiGroup User
- * @apiDescription 获取用户信息，GET方法，headers传JSON格式uid和token，成功返回状态码0和res对象（包括用户各种信息
+ * @apiDescription 获取用户信息，GET方法
  * ）
  *
- * @apiHeader {String} uid 用户id
- * @apiHeader {String} token 用户token
+ * @apiHeader {String} Authorazition Bearer token
  *
  * @apiSuccess {Number} err_code 0
  * @apiSuccess {String} msg  'success'
  * @apiSuccess {Object} res
- * @apiSuccess {String} res.id 用户id
+ * @apiSuccess {String} res.id 用户ID
  * @apiSuccess {String} res.phone 用户手机号
- * @apiSuccess {String} res.password 用户密码
  * @apiSuccess {String} res.name 用户昵称
  * @apiSuccess {String} res.avatar_url 用户头像url
  *
@@ -172,7 +176,6 @@ exports.login = async ctx => {
  *   "res": {
  *     "id": 1,
  *     "phone": "15033508206",
- *     "password": "xxxxxx",
  *     "name": "admin001",
  *     "avatar_url": "http://xxxxxxxx"
  *   }
@@ -181,26 +184,23 @@ exports.login = async ctx => {
  * @apiUse ILLEGAL_OPERATION
  */
 exports.getUserInfo = async ctx => {
-  const {uid, token} = ctx.request.headers
-  const isCurrentUser = await UserModel.isCurrentUser(uid, token)
-  if (!isCurrentUser) {
+  const token = ctx.request.headers.authorization.substring(7)
+  const result = await UserModel.getInfoByUserToken(token)
+  if (!result.length) {
     throw new ApiError(ApiErrorNames.ILLEGAL_OPERATION)
   }
-  const select_result = await UserModel.getInfoByUserId(uid)
-  ctx.body = select_result[0]
+  ctx.body = result[0]
 }
 
 /**
- * @api {POST} /user/updateUserInfo 更新用户信息（*）
+ * @api {POST} /user/updateUserInfo 更新用户信息
  * @apiName updateUserInfo
  * @apiGroup User
- * @apiDescription 更新用户信息，POST方法，headers传JSON格式uid和token，body传JSON格式待更新信息，成功返回状态码0
+ * @apiDescription 更新用户信息
  *
- * @apiHeader {String} uid 用户id
- * @apiHeader {String} token 用户token
+ * @apiHeader {String} Authorazition Bearer token
  *
  * @apiParam {Object} data
- * @apiParam {String} [data.phone] 用户手机号
  * @apiParam {String} [data.password] 用户密码
  * @apiParam {String} [data.name] 用户昵称
  * @apiParam {String} [data.avatar_url] 用户头像url
@@ -214,13 +214,51 @@ exports.getUserInfo = async ctx => {
  * @apiUse ILLEGAL_OPERATION
  */
 exports.updateUserInfo = async ctx => {
-  const { uid, token } = ctx.request.headers
-  const updateData = ctx.request.body
-  const isCurrentUser = await UserModel.isCurrentUser(uid, token)
-  if (!isCurrentUser) {
+  const token = ctx.request.headers.authorization.substring(7)
+  let updateData = {
+    name: ctx.request.body.name,
+    avatar_url: ctx.request.body.avatar_url,
+  }
+  if (ctx.request.body.password) {
+    updateData.password = await bcrypt.hash(password, 5)
+  }
+  const result = await UserModel.getInfoByUserToken(token)
+  if (!result.length) {
     throw new ApiError(ApiErrorNames.ILLEGAL_OPERATION)
   }
-  await UserModel.updateInfo(updateData, uid)
+  await UserModel.updateInfoByToken(updateData, token)
+  ctx.body = ""
+}
+
+/**
+ * @api {POST} /user/registerDevice 激活/注册设备
+ * @apiName register
+ * @apiVersion 1.0.0
+ * @apiGroup User
+ * @apiDescription 将用户与其设备进行绑定
+ *
+ * @apiHeader {String} Authorazition Bearer token
+ *
+ * @apiParam {Object} data
+ * @apiParam {String/Number} data.device_id 设备token
+ *
+ * @apiParamExample {application/json} 请求案例:
+ * {
+ *   "device_id": "1"
+ * }
+ *
+ * @apiUse CODE_0
+ * @apiUse PARAMS_ERROR
+ * @apiUse REPEATED_BIND
+ */
+exports.registerDevice = async ctx => {
+  const token = ctx.request.headers.authorization.substring(7)
+  const {device_id} = ctx.request.body
+  const result = await UserModel.getInfoByUserToken(token)
+  if (!result.length) {
+    throw new ApiError(ApiErrorNames.ILLEGAL_OPERATION)
+  }
+  await UserModel.registerDevice(result[0].id, device_id)
   ctx.body = ""
 }
 

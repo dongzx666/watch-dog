@@ -2,6 +2,7 @@ CREATE TABLE   IF NOT EXISTS  `user_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `phone` varchar(100) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
+  `token` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `avatar_url` varchar(100) DEFAULT NULL,
   `detail_info` longtext DEFAULT NULL,

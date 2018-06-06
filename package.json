@@ -10,14 +10,17 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "bcrypt": "^2.0.1",
     "bluebird": "^3.5.1",
     "cross-env": "^5.1.0",
     "debug": "^2.6.3",
     "jpush-async": "^4.0.0-rc.1",
+    "jsonwebtoken": "^8.2.2",
     "koa": "^2.2.0",
     "koa-bodyparser": "^3.2.0",
     "koa-convert": "^1.2.0",
     "koa-json": "^2.0.2",
+    "koa-jwt": "^3.3.2",
     "koa-logger": "^2.0.1",
     "koa-multer": "^1.0.2",
     "koa-onerror": "^1.2.1",

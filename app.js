@@ -5,6 +5,7 @@ const json = require('koa-json')
 const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
+const jwt = require('koa-jwt')
 const logUtil = require('./utils/log_util.js');
 const response_formatter = require('./middlewares/response_formatter')
 
@@ -14,6 +15,7 @@ const routes = require('./routes/index')
 onerror(app)
 
 // middlewares
+app.use(jwt({ secret: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9' }).unless({ path: [/^\/device/,/^\/user\/register/,/^\/user\/login/] }));
 app.use(bodyparser({
   enableTypes:['json', 'form', 'text']
 }))

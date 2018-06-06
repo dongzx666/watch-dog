@@ -50,46 +50,6 @@ var JPush = require('../node_modules/jpush-async/lib/JPush/JPushAsync.js')
  */
 
 /**
- * @api {POST} /device/register 激活设备（*）
- * @apiName register
- * @apiVersion 1.0.0
- * @apiGroup Device
- * @apiDescription 手动进行激活设备
- *
- * @apiHeader {String} uid 用户id
- * @apiHeader {String} token 用户token
- *
- * @apiParam {Object} data
- * @apiParam {String} data.device_token 设备token
- *
- * @apiParamExample {application/json} 请求案例:
- * {
- *   "device_token": "ccf930e0-b1a6-11e7-99c9-912787fed0d4"
- * }
- *
- * @apiUse CODE_0
- * @apiUse PARAMS_ERROR
- * @apiUse REPEATED_BIND
- */
-exports.register = async ctx => {
-  const {uid} = ctx.request.headers
-  const {device_token} = ctx.request.body
-  if (!Boolean(device_token) && !Boolean(uid)) {
-    throw new ApiError(ApiErrorNames.PARAMS_ERROR)
-  }
-  const device_id = await DeviceModel.isExitDevice(device_token)
-  if (!device_id) {
-    throw new ApiError(ApiErrorNames.PARAMS_ERROR)
-  }
-  const isRegistered = await DeviceModel.isRegistered(device_id)
-  if (isRegistered) {
-    throw new ApiError(ApiErrorNames.REPEATED_BIND)
-  }
-  await DeviceModel.register(uid, device_id)
-  ctx.body = ""
-}
-
-/**
  * @api {POST} /device/getDeviceLog 获取设备日志信息（*）
  * @apiName getDeviceLog
  * @apiVersion 1.0.0
@@ -230,7 +190,7 @@ exports.insertDeviceImage = async ctx => {
  * @apiName postUserMsg
  * @apiVersion 1.0.0
  * @apiGroup Device
- * @apiDescription 消息推送
+ * @apiDescription 消息推送,目前仅支持安卓设备
  *
  * @apiParam {Object} data
  * @apiParam {String} data.device_id 设备id
