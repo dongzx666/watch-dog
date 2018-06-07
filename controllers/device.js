@@ -3,7 +3,8 @@ const DeviceModel = require('../models/device')
 const DeviceService = require('../services/device.js')
 const LegalModel = require('../models/legal.js')
 const {ApiError, ApiErrorNames} = require('../utils/err_util.js');
-var JPush = require('../node_modules/jpush-async/lib/JPush/JPushAsync.js')
+const JPush = require('../node_modules/jpush-async/lib/JPush/JPushAsync.js')
+const jpush_config = require('../config/index.js').jpush_config
 
 /**
  * @apiDefine CODE_0
@@ -222,10 +223,10 @@ exports.postUserMsg = async ctx => {
   const user_id = await DeviceModel.getUserByDevice(device_id)
   const alias = await DeviceModel.getAlias(user_id)
   // 极光推送
-  var client = JPush.buildClient('51f6331cb0e5342a8768fe92', 'a04c9970d14f2c119fe3bce1')
+  var client = JPush.buildClient(jpush_config.key, jpush_config.secret)
   // var client = JPush.buildClient({
-  //   appKey:'51f6331cb0e5342a8768fe92',
-  //   masterSecret:'a04c9970d14f2c119fe3bce1',
+  //   appKey: jpush_config.key,
+  //   masterSecret: jpush_config.secret,
   //   isDebug:false
   // });
   client.push().setPlatform('android')

@@ -5,7 +5,8 @@ const UserService = require('../services/user.js')
 const {testPhone} = require('../utils/format_util.js')
 const rp = require('request-promise-native')
 const bcrypt = require('bcrypt')
-const jsonwebtoken = require('jsonwebtoken');
+const jsonwebtoken = require('jsonwebtoken')
+const jwt_secret = require('../config/index.js').jwt_secret
 
 /**
  * @apiDefine CODE_0
@@ -103,7 +104,6 @@ exports.register = async ctx => {
  * @apiName login
  * @apiGroup User
  * @apiDescription 进行用户登录，POST方法
- * ）
  *
  *
  * @apiParam {Object} data
@@ -147,7 +147,7 @@ exports.login = async ctx => {
     data: { phone, password },
     // 设置 token 过期时间
     exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30), // 60 seconds * 60 minutes = 1 hour, 共一个月
-  }, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9')
+  }, jwt_secret)
   await UserModel.updateInfoByPhone({token}, phone)
   ctx.body = {token}
 }
@@ -157,7 +157,6 @@ exports.login = async ctx => {
  * @apiName getUserInfo
  * @apiGroup User
  * @apiDescription 获取用户信息，GET方法
- * ）
  *
  * @apiHeader {String} Authorazition Bearer token
  *
@@ -248,8 +247,7 @@ exports.updateUserInfo = async ctx => {
  * }
  *
  * @apiUse CODE_0
- * @apiUse PARAMS_ERROR
- * @apiUse REPEATED_BIND
+ * @apiUse ILLEGAL_OPERATION
  */
 exports.registerDevice = async ctx => {
   const token = ctx.request.headers.authorization.substring(7)

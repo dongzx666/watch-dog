@@ -11,6 +11,7 @@ var response_formatter = function(pattern){
             //先去执行路由
             await next();
         } catch (error) {
+            console.log('middle error is ')
             console.log(error)
             //如果异常类型是API异常并且通过正则验证的url，将错误信息添加到响应体中返回。
             if(error instanceof ApiError){
@@ -46,6 +47,7 @@ var response_formatter = function(pattern){
             //     }
             // }
         // }
+        console.log('ctx is ')
         console.log(ctx)
         if (ctx.response.status != 200) {
             ctx.body = {
