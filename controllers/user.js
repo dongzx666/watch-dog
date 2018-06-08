@@ -231,7 +231,7 @@ exports.updateUserInfo = async ctx => {
 
 /**
  * @api {POST} /user/registerDevice 激活/注册设备
- * @apiName register
+ * @apiName registerDevice
  * @apiVersion 1.0.0
  * @apiGroup User
  * @apiDescription 将用户与其设备进行绑定
