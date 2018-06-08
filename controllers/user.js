@@ -267,6 +267,8 @@ exports.registerDevice = async ctx => {
  * @apiGroup User
  * @apiDescription 获取设备信息
  *
+ * @apiHeader {String} Authorazition Bearer token
+ *
  * @apiParam {Object} data
  * @apiParam {String} data.device_id 设备id
  *
@@ -311,6 +313,8 @@ exports.getDeviceInfo = async ctx => {
  * @apiVersion 1.0.0
  * @apiGroup User
  * @apiDescription 获取设备图像
+ *
+ * @apiHeader {String} Authorazition Bearer token
  *
  * @apiParam {Object} data
  * @apiParam {Number/String} data.device_id 设备id
