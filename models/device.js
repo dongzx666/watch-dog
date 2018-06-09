@@ -60,12 +60,12 @@ exports.insertDeviceImage = async (device_id, image_url) => {
 
 exports.getUserByDevice = async (device_id) => {
   const sql = 'SELECT user_id FROM user_device WHERE device_id = ?'
-  const rows = await query(sql, device_id)
+  const rows = await query(sql, [device_id])
   return rows[0].user_id
 }
 
 exports.getAlias = async (user_id) => {
   const sql = 'SELECT alias FROM user_info WHERE id = ?'
-  const rows = await query(sql, user_id)
+  const rows = await query(sql, [user_id])
   return rows[0].alias
 }

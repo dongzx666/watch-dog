@@ -79,7 +79,7 @@ class UserController {
       throw new ApiError(ApiErrorNames.ILLEGAL_OPERATION)
     }
     const device_result = await UserModel.isRegisteredDevice(device_id)
-    if (!device_result.length) {
+    if (device_result.length) {
       throw new ApiError(ApiErrorNames.REPEATED_BIND)
     }
     await UserModel.registerDevice(user_result[0].id, device_id)

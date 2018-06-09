@@ -3,7 +3,7 @@ const DeviceModel = require('../models/device')
 const DeviceService = require('../services/device.js')
 const LegalModel = require('../models/legal.js')
 const {ApiError, ApiErrorNames} = require('../utils/err_util.js');
-const JPush = require('../node_modules/jpush-async/lib/JPush/JPushAsync.js')
+let JPush = require('../node_modules/jpush-async/lib/JPush/JPushAsync.js')
 const jpush_config = require('../config/index.js').jpush_config
 
 
@@ -51,6 +51,8 @@ exports.postUserMsg = async ctx => {
   // 提取用户信息
   const user_id = await DeviceModel.getUserByDevice(device_id)
   const alias = await DeviceModel.getAlias(user_id)
+  console.log(alias)
+  console.log(jpush_config)
   // 极光推送
   let client = JPush.buildClient(jpush_config.key, jpush_config.secret)
   // var client = JPush.buildClient({

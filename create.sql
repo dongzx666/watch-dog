@@ -40,7 +40,6 @@ CREATE TABLE   IF NOT EXISTS  `device_log` (
   `device_id` int(11) DEFAULT NULL,
   `type_id` int(11) DEFAULT NULL,
   `content` varchar(255) DEFAULT NULL,
-  `status` tinyint(100) DEFAULT 1,
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
   `modified_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `electricity` int(11) DEFAULT NULL,

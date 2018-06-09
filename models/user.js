@@ -40,7 +40,7 @@ exports.isExitUser = async function (phone) {
   return rows
 }
 
-exports.isRegisteredDeviceByDevice = async (device_id) => {
+exports.isRegisteredDevice = async (device_id) => {
   const sql = "SELECT user_id FROM user_device WHERE device_id = ?"
   const rows = await query(sql, [device_id])
   return rows
