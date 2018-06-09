@@ -27,7 +27,7 @@ exports.registerDevice = async (user_id, device_id) => {
   await query(sql, [user_id, device_id])
 }
 
-exports.getUserUserByPhone = async function (phone) {
+exports.getUserByPhone = async function (phone) {
   console.log(2)
   const sql = "SELECT * FROM user_info WHERE phone = ?"
   const rows = await query(sql, [phone])
@@ -46,7 +46,7 @@ exports.isRegisteredDeviceByDevice = async (device_id) => {
   return rows
 }
 
-exports.isRegisteredDeviceByUser = async (user_id) => {
+exports.getDeviceByUser = async (user_id) => {
   const sql = "SELECT device_id FROM user_device WHERE user_id = ?"
   const rows = await query(sql, [user_id])
   return rows
@@ -79,6 +79,7 @@ exports.isRegisteredDeviceByUser = async (user_id) => {
 //     return false
 //   }
 // }
+
 
 exports.getDeviceImage = async ({ device_id, page_size, page_num }) => {
   const start = (page_num - 1) * page_size

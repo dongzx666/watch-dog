@@ -2,7 +2,7 @@
 看门狗后端接口代码
 
 ## api-doc指令
-`apidoc -i controllers/ -o apidoc/`
+`apidoc -i apicomments/ -o apidoc/`
 
 ## 服务器更新
 `source ./watch-dog-update.sh `

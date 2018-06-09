@@ -13,20 +13,11 @@ CREATE TABLE   IF NOT EXISTS  `user_info` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE   IF NOT EXISTS  `user_token` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `token` varchar(100) DEFAULT NULL,
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
-  `modified_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE   IF NOT EXISTS  `device_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
-  `device_token` varchar(100) NOT NULL,
+  `device_id` varchar(100) NOT NULL,
   `status` int(11) DEFAULT 0,
   `device_info` varchar(100) DEFAULT NULL,
   `ip` varchar(100) DEFAULT NULL,
@@ -52,10 +43,10 @@ CREATE TABLE   IF NOT EXISTS  `device_log` (
   `status` tinyint(100) DEFAULT 1,
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
   `modified_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `electricity` int(11) DEFAULT 100,
-  `knock_state` tinyint(1) DEFAULT 0,
-  `poke_state` tinyint(1) DEFAULT 0,
-  `lock_state` tinyint(1) DEFAULT 0,
+  `electricity` int(11) DEFAULT NULL,
+  `knock_state` tinyint(1) DEFAULT NULL,
+  `poke_state` tinyint(1) DEFAULT NULL,
+  `lock_state` tinyint(1) DEFAULT NULL,
   `31` varchar(100) DEFAULT NULL,
   `32` varchar(100) DEFAULT NULL,
   `33` varchar(100) DEFAULT NULL,

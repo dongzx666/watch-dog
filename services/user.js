@@ -6,3 +6,7 @@ exports.validateGetImage = function (device_id) {
     throw new ApiError(ApiErrorNames.PARAMS_ERROR)
   }
 }
+
+exports.validateToken = async (token) => {
+
+}

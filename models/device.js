@@ -44,14 +44,14 @@ exports.getDeviceLog = async ({device_id, pageSize=5, pageNum=1}) => {
   return rows
 }
 
-exports.insertDeviceInfo = async ({ device_id, device_info }) => {
+exports.insertDeviceInfo = async (device_id, device_info) => {
   const insert_part = Object.assign({device_id}, device_info)
   const sql = 'INSERT INTO device_log SET ?'
   const rows = await query(sql, insert_part)
   return rows
 }
 
-exports.insertDeviceImage = async ({ device_id, image_url }) => {
+exports.insertDeviceImage = async (device_id, image_url) => {
   const insert_part = { device_id, image_url }
   const sql = 'INSERT INTO image_info SET ?'
   const rows = await query(sql, insert_part)

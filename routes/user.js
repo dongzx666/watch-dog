@@ -1,5 +1,6 @@
 const router = require('koa-router')()
 const user = require('../controllers/user')
+// import user from '../controllers/user'
 
 router.get('/getUserInfo', user.getUserInfo)
 router.post('/updateUserInfo', user.updateUserInfo)
