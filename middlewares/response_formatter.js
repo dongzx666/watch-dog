@@ -6,7 +6,7 @@ const {ApiError} = require('../utils/err_util.js')
 
 var response_formatter = function(pattern){
     return async (ctx, next) => {
-        // var reg = new RegExp(pattern);
+        // url_filter(pattern)
         try {
             //先去执行路由
             await next();
@@ -70,4 +70,23 @@ var response_formatter = function(pattern){
         }
     }
 }
+
+var url_filter = function(pattern){
+    let flag = false;
+    for (let i= 0; i < pattern.length; i++) {
+        let item = pattern[i]
+        if (!item.test(ctx.originalUrl)) {
+            flag = true
+            break
+        }
+    }
+    if (flag) {
+        // valiate_token()
+    }
+}
+
+// var valiate_token = function () {
+
+// }
+
 module.exports = response_formatter;
