@@ -63,9 +63,10 @@ exports.postUserMsg = async ctx => {
     .setNotification('Hi, JPush', JPush.android(content, null, 1))
     .send()
     .then(function(result) {
-        console.log(result)
+        const {sendno, msg_id} = result
+        ctx.body = {sendno, msg_id}
     }).catch(function(err) {
         console.log(err)
+        // console.log(Object.keys(err))
     })
-  ctx.body = ''
 }
