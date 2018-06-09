@@ -9,7 +9,7 @@ exports.validateInsertImage = function (device_id, image_url) {
 }
 
 exports.validateInsertInfo = function (device_id, device_info) {
-  if (device_id == null) {
+  if (device_id == null || device_info == null) {
     throw new ApiError(ApiErrorNames.PARAMS_ERROR)
   }
 }

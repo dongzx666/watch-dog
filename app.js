@@ -16,7 +16,7 @@ const routes = require('./routes/index')
 onerror(app)
 
 // middlewares
-app.use(jwt({ secret: jwt_secret }).unless({ path: [/^\/device/,/^\/scm/,/^\/user\/register/,/^\/user\/login/] }));
+app.use(jwt({ secret: jwt_secret }).unless({ path: [/^\/images/,/^\/device/,/^\/common/,/^\/scm/,/^\/user\/register/,/^\/user\/login/] }));
 app.use(bodyparser({
   enableTypes:['json', 'form', 'text']
 }))

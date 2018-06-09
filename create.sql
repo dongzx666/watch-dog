@@ -38,6 +38,7 @@ CREATE TABLE   IF NOT EXISTS  `user_device` (
 CREATE TABLE   IF NOT EXISTS  `device_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `device_id` int(11) DEFAULT NULL,
+  `type` int(11) DEFAULT 0,
   `type_id` int(11) DEFAULT NULL,
   `content` varchar(255) DEFAULT NULL,
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,

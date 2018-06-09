@@ -45,7 +45,7 @@ exports.postUserMsg = async ctx => {
   // 校验
   DeviceService.validateHaveDevice(device_id)
   // 插入数据库
-  await DeviceModel.insertDeviceInfo(device_id, {content})
+  await DeviceModel.insertDeviceInfo(device_id, {content}, type = 1)
   // 提取用户信息
   const user_id = await DeviceModel.getUserByDevice(device_id)
   const alias = await DeviceModel.getAlias(user_id)
