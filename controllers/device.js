@@ -2,10 +2,8 @@
 const DeviceModel = require('../models/device')
 const DeviceService = require('../services/device.js')
 const LegalModel = require('../models/legal.js')
-const {ApiError, ApiErrorNames} = require('../utils/err_util.js');
-let JPush = require('../node_modules/jpush-async/lib/JPush/JPushAsync.js')
-const jpush_config = require('../config/index.js').jpush_config
-
+const {ApiError, ApiErrorNames} = require('../utils/err_util.js')
+const jpush = require('../utils/tool.js').jpush
 
 exports.getDeviceLog = async ctx => {
   const { uid, token } = ctx.request.headers
@@ -52,21 +50,8 @@ exports.postUserMsg = async ctx => {
   const user_id = await DeviceModel.getUserByDevice(device_id)
   const alias = await DeviceModel.getAlias(user_id)
   // 极光推送
-  let client = JPush.buildClient(jpush_config.key, jpush_config.secret)
-  // var client = JPush.buildClient({
-  //   appKey: jpush_config.key,
-  //   masterSecret: jpush_config.secret,
-  //   isDebug:false
-  // });
-  client.push().setPlatform('android')
-    .setAudience(JPush.alias(alias))
-    .setNotification('Hi, JPush', JPush.android(content, null, 1))
-    .send()
-    .then(function(result) {
-        const {sendno, msg_id} = result
-        ctx.body = {sendno, msg_id}
-    }).catch(function(err) {
-        console.log(err)
-        // console.log(Object.keys(err))
-    })
+  const result = await jpush(alias, content)
+  if (result) {
+    ctx.body = result
+  }
 }
