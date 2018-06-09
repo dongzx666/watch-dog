@@ -2,7 +2,7 @@ const {ApiError, ApiErrorNames} = require('../utils/err_util.js');
 const {query, executeTrans} = require('../utils/db_util.js')
 const UserModel = require('../models/user')
 const UserService = require('../services/user.js')
-const {testPhone} = require('../utils/format_util.js')
+const {testPhone, isExit} = require('../utils/format_util.js')
 const rp = require('request-promise-native')
 const bcrypt = require('bcrypt')
 const jsonwebtoken = require('jsonwebtoken')
@@ -13,7 +13,7 @@ class UserController {
   // 用户注册
   static async register (ctx) {
     let {phone, password} = ctx.request.body
-    if (!Boolean(phone) ||  !Boolean(password) || !testPhone(phone)) {
+    if (!isExit({phone, password}) || !testPhone(phone)) {
       throw new ApiError(ApiErrorNames.PARAMS_ERROR)
     }
     const userList = await UserModel.getUserByPhone(phone)
@@ -27,7 +27,7 @@ class UserController {
   // 用户登录
   static async login (ctx) {
     const { phone, password } = ctx.request.body
-    if (!Boolean(phone) ||  !Boolean(password) || !testPhone(phone)) {
+    if (!isExit({phone, password}) || !testPhone(phone)) {
       throw new ApiError(ApiErrorNames.PARAMS_ERROR)
     }
     const user_result = await UserModel.isExitUser(phone, password)
@@ -47,6 +47,7 @@ class UserController {
   // 获取用户信息
   static async getUserInfo (ctx) {
     const token = ctx.request.headers.authorization.substring(7)
+    // 校验token
     const result = await UserModel.getInfoByUserToken(token)
     if (!result.length) {
       throw new ApiError(ApiErrorNames.ILLEGAL_OPERATION)
@@ -55,18 +56,16 @@ class UserController {
   }
   // 更新用户信息
   static async updateUserInfo (ctx) {
+    // 默认只允许修改这几项
+    let updateData = UserService.validateUpdate(ctx.request.body)
+    // 校验token
     const token = ctx.request.headers.authorization.substring(7)
-    let updateData = {
-      name: ctx.request.body.name,
-      avatar_url: ctx.request.body.avatar_url,
-    }
+    // const result = await UserService.validateToken(ctx.request.headers.authorization)
+    // 如果还要修改密码
     if (ctx.request.body.password) {
       updateData.password = await bcrypt.hash(password, 5)
     }
-    const result = await UserModel.getInfoByUserToken(token)
-    if (!result.length) {
-      throw new ApiError(ApiErrorNames.ILLEGAL_OPERATION)
-    }
+    // 更新用户信息
     await UserModel.updateInfoByToken(updateData, token)
     ctx.body = ""
   }
@@ -74,20 +73,23 @@ class UserController {
   static async registerDevice (ctx) {
     const token = ctx.request.headers.authorization.substring(7)
     const {device_id} = ctx.request.body
+    // 校验token
     const user_result = await UserModel.getInfoByUserToken(token)
     if (!user_result.length) {
       throw new ApiError(ApiErrorNames.ILLEGAL_OPERATION)
     }
+    // 校验是否重复绑定
     const device_result = await UserModel.isRegisteredDevice(device_id)
     if (device_result.length) {
       throw new ApiError(ApiErrorNames.REPEATED_BIND)
     }
+    // 绑定设备
     await UserModel.registerDevice(user_result[0].id, device_id)
     ctx.body = ""
   }
   // 获取设备信息
   static async getDeviceInfo (ctx) {
-    const { uid, token } = ctx.request.headers
+    // const token = ctx.request.headers.authorization.substring(7)
     const { device_id } = ctx.request.body
     const result = await UserModel.getDeviceInfo({device_id})
     ctx.body = result[0]
@@ -97,7 +99,6 @@ class UserController {
     let { device_id, page_size, page_num } = ctx.request.body
     page_size = ~~page_size
     page_num = ~~page_num
-    UserService.validateGetImage(device_id)
     const result = await UserModel.getDeviceImage({ device_id, page_size, page_num })
     ctx.body = result
   }
@@ -108,7 +109,7 @@ class UserController {
     const insert_id = post_result.insertId
     const options = {
       method: 'POST',
-      uri: 'http://api.posttestserver.com/post',
+      uri: 'http://19k6j03315.51mypc.cn:54283/receive',
       body: {
           device_id,
           type,

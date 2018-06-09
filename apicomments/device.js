@@ -2,7 +2,7 @@
 * @Author: 董子鑫
 * @Date:   2018-06-09 14:46:50
 * @Last Modified by:   董子鑫
-* @Last Modified time: 2018-06-09 14:47:42
+* @Last Modified time: 2018-06-09 23:18:54
 */
 
 /**
@@ -38,53 +38,6 @@
  *   }
  */
 
-/**
- * @apiDefine ILLEGAL_OPERATION
- * @apiSuccess (Response Error 2001) {number} err_code 2001
- * @apiSuccess (Response Error 2001) {string} msg 操作不合法
- * @apiSuccessExample {application/json} 操作不合法案例：
- *   {
- *     "err_code": 2001,
- *     "msg": "操作不合法",
- *   }
- */
-
-/**
- * @api {POST} /device/getDeviceLog 获取设备日志信息（*）
- * @apiName getDeviceLog
- * @apiVersion 1.0.0
- * @apiGroup Device
- * @apiDescription 获取设备日志信息
- *
- * @apiHeader {String} uid 用户id
- * @apiHeader {String} token 用户token
- *
- * @apiParam {Object} data
- * @apiParam {String} data.device_id 设备id
- *
- * @apiParamExample {application/json} 请求案例:
- * {
- *   "device_id": "1"
- * }
- *
- * @apiSuccess  {number} err_code 0
- * @apiSuccess  {string} msg success
- * @apiSuccess  {object} res
- * @apiSuccess  {string} res.content 日志详情
- * @apiSuccess  {string} res.create_time 日志时间
- * @apiSuccessExample {application/json} 响应案例：
- *   {
- *     "err_code": 0,
- *     "msg": "success",
- *     "res": {
- *       "content": "发送一条短信",
- *       "create_time": "xxxxxxxx"
- *     }
- *   }
- *
- * @apiUse PARAMS_ERROR
- * @apiUse ILLEGAL_OPERATION
- */
 
 /**
  * @api {POST} /device/insertDeviceInfo 插入设备信息

@@ -43,25 +43,3 @@ exports.getIPAdress = function () {
   }
   return map;
 }
-
-exports.jpush = async (alias, content) => {
-  return new Promise(( resolve, reject ) => {
-    let client = JPush.buildClient(jpush_config.key, jpush_config.secret)
-    // var client = JPush.buildClient({
-    //   appKey: jpush_config.key,
-    //   masterSecret: jpush_config.secret,
-    //   isDebug:false
-    // });
-    client.push().setPlatform('android')
-      .setAudience(JPush.alias(alias))
-      .setNotification('Hi, JPush', JPush.android(content, null, 1))
-      .send()
-      .then(function(result) {
-          console.log(result)
-          resolve( result )
-      }).catch(function(err) {
-          console.log(err)
-          reject( err )
-      })
-  })
-}
