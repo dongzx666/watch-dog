@@ -40,6 +40,18 @@ exports.isExitUser = async function (phone) {
   return rows
 }
 
+exports.isRegisteredDeviceByDevice = async (device_id) => {
+  const sql = "SELECT user_id FROM user_device WHERE device_id = ?"
+  const rows = await query(sql, [device_id])
+  return rows
+}
+
+exports.isRegisteredDeviceByUser = async (user_id) => {
+  const sql = "SELECT device_id FROM user_device WHERE user_id = ?"
+  const rows = await query(sql, [user_id])
+  return rows
+}
+
 // exports.getTokenByUserId = async function (id) {
 //   const token = UUID.v1()
 //   // 判断token表是否已经存在当前用户

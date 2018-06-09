@@ -120,13 +120,15 @@ exports.register = async ctx => {
  * @apiSuccess {String} msg  'success'
  * @apiSuccess {Object} res
  * @apiSuccess {String} res.token 用户token
+ * @apiSuccess {Array} res.device 用户已注册设备列表
  *
  * @apiSuccessExample {application/json} 响应案例:
  * {
  *   "err_code": 0,
  *   "msg": "success",
  *   "res": {
- *     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InBob25lIjoiMTUwMzM1MDgyMjkiLCJwYXNzd29yZCI6IjEyMzQ1NiJ9LCJleHAiOjE1MzA4ODkzMzcsImlhdCI6MTUyODI5NzMzN30.BaigLKJXETQTi3JJ6s-dce65VWmefGXS2EjdvOQBxVw"
+ *     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InBob25lIjoiMTUwMzM1MDgyMjkiLCJwYXNzd29yZCI6IjEyMzQ1NiJ9LCJleHAiOjE1MzA4ODkzMzcsImlhdCI6MTUyODI5NzMzN30.BaigLKJXETQTi3JJ6s-dce65VWmefGXS2EjdvOQBxVw",
+ *     "device": []
  *   }
  * }
  *
@@ -138,8 +140,8 @@ exports.login = async ctx => {
   if (!Boolean(phone) ||  !Boolean(password) || !testPhone(phone)) {
     throw new ApiError(ApiErrorNames.PARAMS_ERROR)
   }
-  const user = await UserModel.isExitUser(phone, password)
-  const pwdCompare = await bcrypt.compare(password, user[0].password)
+  const user_result = await UserModel.isExitUser(phone, password)
+  const pwdCompare = await bcrypt.compare(password, user_result[0].password)
   if (!pwdCompare) {
     throw new ApiError(ApiErrorNames.PASSWORD_ERROR)
   }
@@ -149,7 +151,8 @@ exports.login = async ctx => {
     exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30), // 60 seconds * 60 minutes = 1 hour, 共一个月
   }, jwt_secret)
   await UserModel.updateInfoByPhone({token}, phone)
-  ctx.body = {token}
+  const device_result = await UserModel.isRegisteredDeviceByUser(user_result[0].id)
+  ctx.body = {token, device: device_result}
 }
 
 /**
@@ -248,15 +251,20 @@ exports.updateUserInfo = async ctx => {
  *
  * @apiUse CODE_0
  * @apiUse ILLEGAL_OPERATION
+ * @apiUse REPEATED_BIND
  */
 exports.registerDevice = async ctx => {
   const token = ctx.request.headers.authorization.substring(7)
   const {device_id} = ctx.request.body
-  const result = await UserModel.getInfoByUserToken(token)
-  if (!result.length) {
+  const user_result = await UserModel.getInfoByUserToken(token)
+  if (!user_result.length) {
     throw new ApiError(ApiErrorNames.ILLEGAL_OPERATION)
   }
-  await UserModel.registerDevice(result[0].id, device_id)
+  const device_result = await UserModel.isRegisteredDevice(device_id)
+  if (!device_result.length) {
+    throw new ApiError(ApiErrorNames.REPEATED_BIND)
+  }
+  await UserModel.registerDevice(user_result[0].id, device_id)
   ctx.body = ""
 }
 
