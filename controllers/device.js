@@ -6,22 +6,22 @@ const {ApiError, ApiErrorNames} = require('../utils/err_util.js')
 
 class DeviceController {
   //
-  // static async getDeviceLog (ctx) {
-  //   const { uid, token } = ctx.request.headers
-  //   const { device_id, pageSize, pageNum } = ctx.request.body
-  //   // 验证参数合法性
-  //   if (!Boolean(uid) || !Boolean(token) || !Boolean(device_id)) {
-  //     throw new ApiError(ApiErrorNames.PARAMS_ERROR)
-  //   }
-  //   // 验证token合法性
-  //   const isLegal = await LegalModel.isPersonalDevice({uid, token})
-  //   if (!isLegal) {
-  //     throw new ApiError(ApiErrorNames.ILLEGAL_OPERATION)
-  //   }
-  //   const result = await DeviceModel.getDeviceLog({device_id, pageSize, pageNum})
-  //   ctx.body = result
-  // }
-  //
+  static async getDeviceLog (ctx) {
+    const { uid, token } = ctx.request.headers
+    const { device_id, pageSize, pageNum } = ctx.request.body
+    // 验证参数合法性
+    if (!Boolean(uid) || !Boolean(token) || !Boolean(device_id)) {
+      throw new ApiError(ApiErrorNames.PARAMS_ERROR)
+    }
+    // 验证token合法性
+    const isLegal = await LegalModel.isPersonalDevice({uid, token})
+    if (!isLegal) {
+      throw new ApiError(ApiErrorNames.ILLEGAL_OPERATION)
+    }
+    const result = await DeviceModel.getDeviceLog({device_id, pageSize, pageNum})
+    ctx.body = result
+  }
+
   static async insertDeviceInfo (ctx) {
     const { device_id, device_info } = ctx.request.body
     DeviceService.validateInsertInfo(device_id, device_info)
