@@ -28,6 +28,9 @@ var ApiErrorNames = {
   'PASSWORD_ERROR': {
     err_code: 1001, msg: '用户名或密码错误'
   },
+  'TOKEN_EXPIRED': {
+    err_code: 1002, msg: 'token过期，请重新登录'
+  },
   'PARAMS_ERROR': {
     err_code: 1003, msg: '请求参数错误'
   },

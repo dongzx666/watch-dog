@@ -117,14 +117,10 @@ class UserController {
       },
       json: true
     }
-    rp(options).then(res => {
-      ctx.body = {
+    const res = await rp(options)
+    ctx.body = {
         result: res.result
       }
-      if (res.result != null) {
-        // const receive_result = await UserModel.receiveCommand({insert_id, result})
-      }
-    })
   }
 }
 

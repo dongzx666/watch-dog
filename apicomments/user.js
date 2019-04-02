@@ -2,7 +2,7 @@
 * @Author: 董子鑫
 * @Date:   2018-06-09 14:46:28
 * @Last Modified by:   董子鑫
-* @Last Modified time: 2018-06-09 14:46:42
+* @Last Modified time: 2018-06-10 23:40:29
 */
 
 /**
@@ -196,7 +196,7 @@
  */
 
 /**
- * @api {POST} /device/getDeviceInfo 获取设备信息
+ * @api {POST} /user/getDeviceInfo 获取设备信息
  * @apiName getDeviceInfo
  * @apiVersion 1.0.0
  * @apiGroup User
@@ -264,9 +264,12 @@
  *     "err_code": 0,
  *     "msg": "success",
  *     "res": [{
- *       "image_url": "http://120.25.199.214:3001/images/1515917257562.jpg"
+ *       "image_url": "http://120.25.199.214:3001/images/1515917257562.jpg",
+ *       "create_time": "2018-06-09T13:01:46.000Z"
+ *
  *     }, {
- *       "image_url": "http://120.25.199.214:3001/images/1523895285649.jpg"
+ *       "image_url": "http://120.25.199.214:3001/images/1523895285649.jpg",
+ *       "create_time": "2018-06-09T13:01:46.000Z"
  *     }]
  *   }
  *

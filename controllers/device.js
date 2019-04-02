@@ -25,8 +25,8 @@ class DeviceController {
   static async insertDeviceInfo (ctx) {
     const { device_id, device_info } = ctx.request.body
     DeviceService.validateInsertInfo(device_id, device_info)
-    await DeviceModel.insertDeviceInfo(device_id, device_info)
-    ctx.body = ""
+    const result = await DeviceModel.insertDeviceInfo(device_id, device_info)
+    ctx.body = result
   }
   //
   static async insertDeviceImage (ctx) {

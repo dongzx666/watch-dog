@@ -11,7 +11,7 @@ exports.getDeviceLog = async ({device_id, pageSize=5, pageNum=1}) => {
 }
 
 exports.insertDeviceInfo = async (device_id, device_info, type = 0) => {
-  const insert_part = Object.assign({device_id}, device_info, type)
+  const insert_part = Object.assign({device_id, type}, device_info)
   const sql = 'INSERT INTO device_log SET ?'
   const rows = await query(sql, insert_part)
   return rows

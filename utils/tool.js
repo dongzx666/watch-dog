@@ -1,6 +1,4 @@
 const os = require('os');
-let JPush = require('../node_modules/jpush-async/lib/JPush/JPushAsync.js')
-const jpush_config = require('../config/index.js').jpush_config
 exports.getIPAdress = function () {
   var map = [];
   var ifaces = os.networkInterfaces();
